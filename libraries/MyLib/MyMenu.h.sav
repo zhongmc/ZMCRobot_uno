@@ -1,0 +1,87 @@
+#ifndef _MYMENU_H_
+#define _MYMENU_H_
+
+
+#include <Arduino.h>
+
+#include <LiquidCrystal_I2C.h>
+
+#include "MyKey.h"
+
+#define INT_MENU 0
+#define FLOAT_MENU 1
+#define SELECT_MENU 2
+#define OPTION_MENU 3
+#define MENU 4
+#define ACTION_MENU 5
+
+
+
+#ifdef DEBUG
+    #define DEBUG_PRINT(x) Serial.print(x)
+    #define DEBUG_PRINTF(x, y) Serial.print(x, y)
+    #define DEBUG_PRINTLN(x) Serial.println(x)
+    #define DEBUG_PRINTLNF(x, y) Serial.println(x, y)
+#else
+    #define DEBUG_PRINT(x)
+    #define DEBUG_PRINTF(x, y)
+    #define DEBUG_PRINTLN(x)
+    #define DEBUG_PRINTLNF(x, y)
+#endif
+
+
+typedef struct {
+  char *title;
+  int intValue;
+  byte iScale;
+  float floatValue;
+  float fScale;
+  byte valueType;  //0 int 1 float 2 select from child, 3 select option for parent; 4 menu with child menus;5 need confirm menu
+
+
+  byte id;
+  void *last;
+  void *next;
+  void *child;
+  void *parent;
+
+} menu_item;
+
+
+
+class MyMenu {
+  public:
+    MyMenu();
+    MyMenu( menu_item *menu );
+    menu_item *processKey(MyKey *key, LiquidCrystal_I2C *lcd);
+    void showMenu( LiquidCrystal_I2C *lcd);
+
+    byte startKey = 3, retKey = 0, leftKey = 2, rightKey = 1;
+
+    void setKeyId(byte startKey, byte retKey, byte leftKey, byte rightKey);
+    
+    void reset();
+    
+
+  private:
+    menu_item *rootMenu = 0;
+    menu_item *currentMenu = 0;
+    bool confirm = false;
+    bool inSetting = false;
+
+    int savedIntValue;
+    float savedFloatValue;
+    
+    menu_item *startKeyPressed( LiquidCrystal_I2C *lcd);
+    menu_item *retKeyPressed( LiquidCrystal_I2C *lcd);
+    void leftKeyPressed( LiquidCrystal_I2C *lcd);
+    void rightKeyPressed( LiquidCrystal_I2C *lcd);
+
+
+};
+
+
+
+
+
+#endif /* _MYMENU_H_ */

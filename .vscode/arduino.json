@@ -1,0 +1,7 @@
+{
+    "sketch": "BluetoothHM10.ino",
+    "board": "arduino:avr:unowifi",
+    "output": "../build/zmcrobot_uno",
+    "port": "COM7",
+    "programmer": "AVR ISP"
+}

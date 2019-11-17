@@ -1,0 +1,251 @@
+#define DEBUG
+
+#include "MyMenu.h"
+
+
+MyMenu::MyMenu()
+{
+};
+
+
+MyMenu::MyMenu(menu_item *menu)
+{
+  rootMenu = menu;
+  currentMenu = menu;
+};
+
+void MyMenu::reset()
+{
+  currentMenu = rootMenu;
+}
+
+void MyMenu::setKeyId(byte stKey, byte rtKey, byte lKey, byte rKey)
+{
+  this->startKey = stKey;
+  this->retKey = rtKey;
+  this->leftKey = lKey;
+  this->rightKey = rKey;
+  
+}
+
+
+menu_item *MyMenu::processKey(MyKey *key, LiquidCrystal_I2C *lcd)
+{
+  if ( key == 0 || lcd == 0 )
+    return (menu_item *)0;
+  while ( key->keyAvailable())
+  {
+    keypress *aKey = key->getKeyPress();
+    if ( aKey->keyId == startKey )
+    {
+      menu_item *pmenu = startKeyPressed(lcd);
+      if( pmenu != 0  )
+        return pmenu;
+    }
+    else if ( aKey->keyId == retKey )
+    {
+       menu_item *pmenu = retKeyPressed(lcd);
+       if(pmenu != NULL ) //quit menu
+        return pmenu;
+    }
+    else if ( aKey->keyId == leftKey )
+    {
+      leftKeyPressed(lcd);
+    }
+    else if ( aKey->keyId == rightKey )
+    {
+      rightKeyPressed(lcd);
+    }
+  }
+
+  return (menu_item *)0;
+
+};
+
+menu_item *MyMenu::startKeyPressed( LiquidCrystal_I2C *lcd)
+{
+  if ( currentMenu == 0 )
+    return 0;
+
+  if (inSetting ) //confirm setting
+  {
+    inSetting = false;
+    confirm = true;
+    showMenu( lcd );
+    return currentMenu;
+
+  }
+  else if(  currentMenu->valueType == INT_MENU || currentMenu->valueType == FLOAT_MENU ) //value settings
+  {
+    inSetting = true;
+    confirm = false;
+
+    savedIntValue = currentMenu->intValue;
+    savedFloatValue  = currentMenu->floatValue;
+
+    showMenu(lcd);
+
+  }
+  else if ( currentMenu->valueType == ACTION_MENU  ) //selected
+  {
+    return currentMenu;
+
+  }
+  else if(currentMenu->valueType == OPTION_MENU ) // selection selected
+  {
+    return currentMenu;
+  }
+
+  else  //sub menu
+  {
+    if ( currentMenu->child != 0 )
+    {
+      currentMenu = (menu_item *)currentMenu->child;
+      showMenu( lcd );
+    }
+  }
+
+  return 0;
+}
+
+menu_item *MyMenu::retKeyPressed( LiquidCrystal_I2C *lcd)
+{
+  if ( currentMenu == 0 )
+    return NULL;
+  if ( inSetting )
+  {
+    inSetting = false;
+    currentMenu->intValue = savedIntValue;   //RECOVER THE PREV VALUE
+    currentMenu->floatValue = savedFloatValue;
+
+    showMenu( lcd );
+    return NULL;
+  }
+  if ( currentMenu->parent != 0 )  //return to parent menu
+  {
+    currentMenu = (menu_item *)currentMenu->parent;
+    showMenu(lcd);
+    return NULL;
+  }
+  else
+    return (menu_item *)-1;  //quit  menu
+}
+
+
+void MyMenu::leftKeyPressed( LiquidCrystal_I2C *lcd)
+{
+  if ( currentMenu == 0 )
+    return;
+
+  if ( inSetting )
+  {
+    lcd->setCursor(0, 1);
+  
+    if ( currentMenu->valueType == 0 )
+    {
+      currentMenu->intValue = currentMenu->intValue - currentMenu->iScale;
+      lcd->print(F("     "));
+      lcd->setCursor(0, 1);
+      lcd->print(currentMenu->intValue);
+      DEBUG_PRINT( currentMenu->title );
+      DEBUG_PRINTLN( currentMenu->intValue);
+    }
+    else if ( currentMenu->valueType == 1)
+    {
+      currentMenu->floatValue = currentMenu->floatValue = currentMenu->floatValue - currentMenu->fScale;
+      lcd->print(F("     "));
+      lcd->setCursor(0, 1);
+        lcd->print(currentMenu->floatValue);
+      DEBUG_PRINT( currentMenu->title );
+      DEBUG_PRINTLN( currentMenu->floatValue);
+    }
+  }
+  else if ( currentMenu->last != 0 )
+  {
+    currentMenu = (menu_item *)currentMenu->last;
+    showMenu(lcd);
+  }
+}
+
+void MyMenu::rightKeyPressed( LiquidCrystal_I2C *lcd)
+{
+  if ( currentMenu == 0 )
+    return;
+  if ( inSetting )
+  {
+
+    lcd->setCursor(0, 1);
+
+    if ( currentMenu->valueType == 0 )
+    {
+      currentMenu->intValue = currentMenu->intValue + currentMenu->iScale;
+      lcd->print(F("     "));
+    lcd->setCursor(0, 1);
+        lcd->print(currentMenu->intValue);
+      DEBUG_PRINT( currentMenu->title );
+      DEBUG_PRINTLN( currentMenu->intValue);
+
+    }
+    else if ( currentMenu->valueType == 1)
+    {
+      currentMenu->floatValue = currentMenu->floatValue = currentMenu->floatValue + currentMenu->fScale;
+      lcd->print(F("     "));
+    lcd->setCursor(0, 1);
+        lcd->print(currentMenu->floatValue);
+
+      DEBUG_PRINT( currentMenu->title );
+      DEBUG_PRINTLN( currentMenu->floatValue);
+    }
+
+  }
+  else if ( currentMenu->next != 0 )
+  {
+    currentMenu = (menu_item *)currentMenu->next;
+    showMenu(lcd);
+  }
+
+};
+
+
+void MyMenu::showMenu( LiquidCrystal_I2C *lcd)
+{
+  if ( currentMenu == 0 || lcd == 0 )
+    return;
+
+  // DEBUG_PRINT("Show Menu:");
+  DEBUG_PRINT(currentMenu->title);
+  DEBUG_PRINT("  ");
+  lcd->clear();  //this command takes a long time!
+  lcd->setCursor(0, 0); //newline
+  lcd->print( currentMenu->title);
+  lcd->print("  ");
+
+  lcd->setCursor(0, 1);
+  if ( currentMenu->valueType == 0 )
+  {
+    DEBUG_PRINT( currentMenu->intValue );
+    lcd->print(currentMenu->intValue);
+  }
+  else if ( currentMenu->valueType == 1)
+  {
+    DEBUG_PRINT( currentMenu->floatValue );
+    lcd->print(currentMenu->floatValue);
+  }
+  else
+  {
+    DEBUG_PRINT(" -->" );
+    lcd->print(" -->");
+
+  }
+
+  if ( inSetting )
+  {
+    DEBUG_PRINT(" < > to change" );
+    lcd->setCursor(6, 1);
+    lcd->print("< > TO CH");
+  }
+
+  DEBUG_PRINTLN(" " );
+
+};
+
