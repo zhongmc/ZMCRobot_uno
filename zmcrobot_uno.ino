@@ -61,27 +61,22 @@ bool bExecDrive, bExecGTG;
 // IRReceiver irRecv(12);
 // IRCode ircode;
 
-Position pos;
-
-long trigTime, echoTime;
-double ultrasonicDistance;
-
 bool doCheckBattleVoltage = true;
 bool openDebug = false;
-byte settingsReqQueue[8];
-short queueLen = 0;
+
+// byte settingsReqQueue[8];
+// short queueLen = 0;
 
 extern long count1, count2;
 extern int comDataCount;
 
-unsigned long millisPrevKey, millisPrev;
+unsigned long millisPrev;
 
-IRSensor irSensor(GP2Y0A41);
+// IRSensor irSensor(GP2Y0A41);
 
 static double batteryVoltage;  // Measured battery level
 static uint8_t batteryCounter; // Counter used to check if it should check the battery level
 
-double irDistance[5];
 
 void setup()
 {
@@ -164,8 +159,7 @@ void setup()
   // bCount = 0;
   startIMU();
 
-  millisPrevKey = millis();
-  millisPrev = millisPrevKey; //millis();
+  millisPrev = millis();
 
   // driveSupervisor.setRobotPosition(0, 0, PI * mIMU.getYaw() / 180.0);
 }
@@ -206,6 +200,10 @@ void loop()
   {
 
     millisPrev = millisNow;
+
+    double irDistance[5];
+    Position pos;
+
 
     if (currentState == STATE_DRIVE)
     {
@@ -259,9 +257,9 @@ void startGoToGoal()
 void ResetRobot()
 {
   driveSupervisor.resetRobot();
-  pos.x = 0;
-  pos.y = 0;
-  pos.theta = 0;
+  // pos.x = 0;
+  // pos.y = 0;
+  // pos.theta = 0;
 }
 
 void startDrive()
@@ -494,58 +492,60 @@ bool isBatteryLow()
     return false;
 }
 
-bool waitForEcho = false;
-long lastTrigTimer = 0;
+// bool waitForEcho = false;
+// long lastTrigTimer = 0;
+// long trigTime, echoTime;
+// double ultrasonicDistance;
 
-void processUltrasonic()
-{
-  if (waitForEcho)
-  {
-    if (echoTime > 0)
-    {
-      ultrasonicDistance = 0.00017 * echoTime;
-      if (ultrasonicDistance > MAX_ULTRASONIC_DIS)
-        ultrasonicDistance = MAX_ULTRASONIC_DIS - 0.01;
-      waitForEcho = false;
-      echoTime = 0;
-    }
-    else if (millis() - lastTrigTimer > 50)
-    {
-      waitForEcho = false;
-      //      Serial.println("u ...");
-      ultrasonicDistance = 1.2; //MAX_ULTRASONIC_DIS;
-    }
-  }
-  else
-  {
-    long curTime = millis();
-    if (curTime - lastTrigTimer < 40)
-      return;
-    lastTrigTimer = curTime;
-    waitForEcho = true;
+// void processUltrasonic()
+// {
+//   if (waitForEcho)
+//   {
+//     if (echoTime > 0)
+//     {
+//       ultrasonicDistance = 0.00017 * echoTime;
+//       if (ultrasonicDistance > MAX_ULTRASONIC_DIS)
+//         ultrasonicDistance = MAX_ULTRASONIC_DIS - 0.01;
+//       waitForEcho = false;
+//       echoTime = 0;
+//     }
+//     else if (millis() - lastTrigTimer > 50)
+//     {
+//       waitForEcho = false;
+//       //      Serial.println("u ...");
+//       ultrasonicDistance = 1.2; //MAX_ULTRASONIC_DIS;
+//     }
+//   }
+//   else
+//   {
+//     long curTime = millis();
+//     if (curTime - lastTrigTimer < 40)
+//       return;
+//     lastTrigTimer = curTime;
+//     waitForEcho = true;
 
-    digitalWrite(ULTRASONIC_TRIG, HIGH); //trig the ultrosonic
+//     digitalWrite(ULTRASONIC_TRIG, HIGH); //trig the ultrosonic
 
-    long curMicros = micros();
-    while (true) //10us pules
-    {
-      if (micros() - curMicros > 10)
-        break;
-    }
-    digitalWrite(ULTRASONIC_TRIG, LOW); //trig the ultrosonic
-  }
-}
+//     long curMicros = micros();
+//     while (true) //10us pules
+//     {
+//       if (micros() - curMicros > 10)
+//         break;
+//     }
+//     digitalWrite(ULTRASONIC_TRIG, LOW); //trig the ultrosonic
+//   }
+// }
 
 //the ultrasonic isr service
-void UltrasonicEcho()
-{
+// void UltrasonicEcho()
+// {
 
-  int echoSig = digitalRead(ULTRASONIC_ECHO);
-  if (echoSig == HIGH)
-  {
-    trigTime = micros();
-    echoTime = 0;
-  }
-  else
-    echoTime = micros() - trigTime;
-}
+//   int echoSig = digitalRead(ULTRASONIC_ECHO);
+//   if (echoSig == HIGH)
+//   {
+//     trigTime = micros();
+//     echoTime = 0;
+//   }
+//   else
+//     echoTime = micros() - trigTime;
+// }

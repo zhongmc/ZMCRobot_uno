@@ -1,7 +1,7 @@
 #include "Robot.h"
 #include "ZMCRobotROS.h"
 
-extern double ultrasonicDistance;
+// extern double ultrasonicDistance;
 
 Robot::Robot()
 {
@@ -211,21 +211,13 @@ void Robot::readIRSensors()
       irSensors[i]->readPosition();
   }
 
-  if (haveIrSensor[2] == 2)
-  {
-    irSensors[2]->setDistance(ultrasonicDistance);
-  }
-  else if (haveIrSensor[2] == 3)
-  {
-    irSensors[2]->setDistance((ultrasonicDistance + irSensors[2]->distance) / 2);
-  }
-  // if (haveIrSensor[2] && irSensors[2]->distance >= irSensors[2]->getMaxDistance())
+  // if (haveIrSensor[2] == 2)
   // {
   //   irSensors[2]->setDistance(ultrasonicDistance);
   // }
-  // else if (!haveIrSensor[2])
+  // else if (haveIrSensor[2] == 3)
   // {
-  //   irSensors[2]->setDistance(ultrasonicDistance);
+  //   irSensors[2]->setDistance((ultrasonicDistance + irSensors[2]->distance) / 2);
   // }
 
   for (int i = 0; i < 5; i++)

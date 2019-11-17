@@ -59,7 +59,7 @@ void initBluetooth()
     connectToHM10();
     
   // assign event handlers for connected, disconnected to peripheral
-  Serial.println("Bluetooth device active, waiting for connections...");
+  Serial.println("BLE rd.");
   bleBufLen = 0;
 }
 
@@ -247,28 +247,12 @@ void processCommandPackage(byte *dataBuf) {
     // Serial.println(theta);
   }
 
-  else if (cmd[0] == 'M' && cmd[1] == 'G') //go to goal
-  {
-    float d = atof((char *)(data + 2));
-    Serial.print("m gtg:");
-    Serial.println(d);
-
-    count1 = 0;
-    count2 = 0;
-    setGoal(d, 0, 0, 0.12);
-    startGoToGoal();
-  }
-
-  // else if (cmd[0] == 'S' && cmd[1] == 'R') //step response
+  // else if (cmd[0] == 'T' && cmd[1] == 'L') //turn around
   // {
-  //   startStepResponse(90);
+  //     int pwm = 80;
+  //     pwm = atoi( (data + 2) );
+  //    turnAround(pwm);
   // }
-  else if (cmd[0] == 'T' && cmd[1] == 'L') //turn around
-  {
-      int pwm = 80;
-      pwm = atoi( (data + 2) );
-     turnAround(pwm);
-  }
 
   else if (cmd[0] == 'I' && cmd[1] == 'M') //use IMU or not IM0/1,0.5;
   {
@@ -383,32 +367,6 @@ void setConfigValue(const unsigned char *cfgArray)
   // setSettings(settings);
   //  updateConfigToMenu();
 }
-
-//type angle1,2,3,voltage
-void sendBalanceRobotStateValue(double x, double y, double theta, double irDistance[5], double voltage )
-{
-  if ( !bleConnected )
-    return;
-  byte buf[19];
-  memset(buf, 0, 19);
-
-  double scale = 1000;
-
-  floatToByte(buf, x, scale);
-  floatToByte(buf + 2, y, scale);
-  floatToByte(buf + 4, theta, scale);
-
-  scale = 100;
-
-  for ( int i = 0; i < 5; i++)
-  {
-    floatToByte(buf + 6 + 2 * i, irDistance[i], scale);
-  }
-  floatToByte(buf + 16, voltage, scale);
-
-  SendBlePackage(18, 7, buf); //len package type, dataBuf
-}
-
 
 //type, x, y, theta, d0,d1,d2,d3,d4,voltage
 void sendRobotStateValue(byte stateType, Position pos, double irDistance[5], double voltage)
@@ -574,7 +532,7 @@ bool connectToHM10(){
    {
       bluetooth.begin(baudrate[j]);
       delay(100);
-      Serial.print("baud rate ");
+      Serial.print("BR:");
       Serial.println( baudrate[j] );
      // Serial.println("");
       bluetooth.write("AT");
@@ -585,7 +543,7 @@ bool connectToHM10(){
        }
        if( found == true )
        {
-        Serial.println("OK found it!");
+        Serial.println("OK!");
         return found;
        }
        delay(100);

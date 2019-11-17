@@ -213,7 +213,7 @@ void DriveSupervisor::execute(long left_ticks, long right_ticks, double gyro, do
   //   Serial.println( nowMicros - timer);
 }
 
-extern double ultrasonicDistance;
+// extern double ultrasonicDistance;
 
 void DriveSupervisor::check_states()
 {
@@ -229,14 +229,14 @@ void DriveSupervisor::check_states()
 
   //if ( irSensors[1]->distance < d_unsafe || irSensors[2]->distance < d_unsafe || irSensors[3]->distance < d_unsafe )
 
-  if (ultrasonicDistance < MAX_ULTRASONIC_DIS)
-  {
-    if (ultrasonicDistance < 0.05)
-      danger = true;
-    else
-      danger = false;
-    return;
-  }
+  // if (ultrasonicDistance < MAX_ULTRASONIC_DIS)
+  // {
+  //   if (ultrasonicDistance < 0.05)
+  //     danger = true;
+  //   else
+  //     danger = false;
+  //   return;
+  // }
 
   if (irSensors[2]->distance < d_unsafe)
     danger = true;

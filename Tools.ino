@@ -9,8 +9,8 @@ const char *floatToStr(int idx, signed char width, unsigned char prec, double va
 
 extern DriveSupervisor driveSupervisor;
 
-extern long trigTime, echoTime;
-extern double ultrasonicDistance;
+// extern long trigTime, echoTime;
+// extern double ultrasonicDistance;
 
 static char comData[32];
 int comDataCount = 0;
@@ -76,86 +76,38 @@ void printCountInfo()
   log("CI:%d, %d.\n", count1, count2);
 }
 
-void motorSpeed(int pwm)
-{
-  long c1, c2, lt;
-  MoveMotor(pwm);
-  log("%d,", pwm);
+// void motorSpeed(int pwm)
+// {
+//   long c1, c2, lt;
+//   MoveMotor(pwm);
+//   log("%d,", pwm);
 
-  // Serial.print(pwm);
-  // Serial.print(',');
-  delay(500);
-  c1 = count1;
-  c2 = count2;
-  lt = millis();
-  delay(1000);
+//   // Serial.print(pwm);
+//   // Serial.print(',');
+//   delay(500);
+//   c1 = count1;
+//   c2 = count2;
+//   lt = millis();
+//   delay(1000);
 
-  c1 = count1 - c1;
-  c2 = count2 - c2;
-  lt = millis() - lt;
-  log("%d,%d,%d\n", lt, c1, c2);
-}
+//   c1 = count1 - c1;
+//   c2 = count2 - c2;
+//   lt = millis() - lt;
+//   log("%d,%d,%d\n", lt, c1, c2);
+// }
 
 
 
-void speedTest(int pwm0, int pwm1, int step)
-{
-  // long c1, c2, lt;
-  for (int i = pwm0; i < pwm1; i += step)
-  {
-    motorSpeed(i);
-  }
-  MoveMotor(0);
-}
+// void speedTest(int pwm0, int pwm1, int step)
+// {
+//   // long c1, c2, lt;
+//   for (int i = pwm0; i < pwm1; i += step)
+//   {
+//     motorSpeed(i);
+//   }
+//   MoveMotor(0);
+// }
 
-void turnAround(int pwm)
-{
-  // Serial.print("TR:");
-  // Serial.println(pwm);
-  log("TR:%d, %d, %d;\n", pwm, count1, count2);
-
-  if (pwm > 0)
-  {
-    count1 = 0;
-    MoveLeftMotor(pwm);
-  }
-  else
-  {
-    count2 = 0;
-    MoveRightMotor(-pwm);
-  }
-
-  while (true)
-  {
-    if ((pwm > 0 && count1 > 2000) || (pwm < 0 && count2 > 2000))
-    // if (count1 > 1700 || count2 > 1700)
-    {
-      StopMotor();
-      break;
-    }
-    delay(50);
-    log("TR:%d, %d, %d;\n", pwm, count1, count2);
-  }
-
-  delay(100);
-
-  log("ci:%d,%d;\n", count1, count2);
-}
-
-void manuaGoal()
-{
-  count1 = 0;
-  count2 = 0;
-  MoveMotor(90);
-  delay(3000);
-  StopMotor();
-  delay(500);
-  log("%d,%d", count2, count2);
-
-  // Serial.print(count1);
-  // Serial.print(',');
-  // Serial.println(count2);
-}
 
 void getDoubleValues(char *buffer, int c, double *fvs)
 {
@@ -265,7 +217,7 @@ void processCommand(char *buffer, int bufferLen)
     Serial.print("BAT:");
     Serial.print(batteryVoltage);
     Serial.print(", uc dis:");
-    Serial.println(ultrasonicDistance);
+    // Serial.println(ultrasonicDistance);
     Serial.println("\r\n==");
     driveSupervisor.getRobotInfo();
   }
@@ -280,47 +232,47 @@ void processCommand(char *buffer, int bufferLen)
     printCountInfo();
   }
 
-  else if (ch0 == 'm' && ch1 == 'l') // move left motor
-  {
-    int pwm = atoi(buffer + 2);
-    printCountInfo();
-    MoveLeftMotor(pwm);
-  }
+  // else if (ch0 == 'm' && ch1 == 'l') // move left motor
+  // {
+  //   int pwm = atoi(buffer + 2);
+  //   printCountInfo();
+  //   MoveLeftMotor(pwm);
+  // }
 
-  else if (ch0 == 'm' && ch1 == 'r') // move right motor
-  {
-    int pwm = atoi(buffer + 2);
-    printCountInfo();
-    MoveRightMotor(pwm);
-  }
+  // else if (ch0 == 'm' && ch1 == 'r') // move right motor
+  // {
+  //   int pwm = atoi(buffer + 2);
+  //   printCountInfo();
+  //   MoveRightMotor(pwm);
+  // }
 
-  else if (ch0 == 'm' && ch1 == 'm') // move motor
-  {
-    int pwm = atoi(buffer + 2);
-    motorSpeed(pwm);
-    MoveMotor(0);
-  }
-  else if (ch0 == 's' && ch1 == 'p') //speed test
-  {
-    int pwm0, pwm1, step = 0;
-    pwm0 = atoi(buffer + 2);
-    char *buf = strchr((buffer + 2), ',');
-    pwm1 = atoi(buf + 1);
-    buf = strchr((buf + 1), ',');
-    step = atoi(buf + 1);
+  // else if (ch0 == 'm' && ch1 == 'm') // move motor
+  // {
+  //   int pwm = atoi(buffer + 2);
+  //   motorSpeed(pwm);
+  //   MoveMotor(0);
+  // }
+  // else if (ch0 == 's' && ch1 == 'p') //speed test
+  // {
+  //   int pwm0, pwm1, step = 0;
+  //   pwm0 = atoi(buffer + 2);
+  //   char *buf = strchr((buffer + 2), ',');
+  //   pwm1 = atoi(buf + 1);
+  //   buf = strchr((buf + 1), ',');
+  //   step = atoi(buf + 1);
 
-    // Serial.print("SP:");
-    // Serial.print(pwm0);
-    // Serial.print(",");
-    // Serial.print(pwm1);
-    // Serial.print(",");
-    // Serial.println(step);
-    log("SP:%d,%d,%d\n", pwm0, pwm1, step);
-    if (step == 0)
-      step = 10;
+  //   // Serial.print("SP:");
+  //   // Serial.print(pwm0);
+  //   // Serial.print(",");
+  //   // Serial.print(pwm1);
+  //   // Serial.print(",");
+  //   // Serial.println(step);
+  //   log("SP:%d,%d,%d\n", pwm0, pwm1, step);
+  //   if (step == 0)
+  //     step = 10;
 
-    speedTest(pwm0, pwm1, step);
-  }
+  //   speedTest(pwm0, pwm1, step);
+  // }
 
   else if (ch0 == 'r' && ch1 == 's') //RESET
   {
@@ -347,27 +299,6 @@ void processCommand(char *buffer, int bufferLen)
     //         SetSimulateMode(true);
     // else
     //   SetSimulateMode(false);
-  }
-
-  else if (ch0 == 't' && ch1 == 'l') //turn around left/ right(-pwm) test
-  {
-    int pwm = atoi(buffer + 2);
-    turnAround(pwm);
-  }
-  else if (ch0 == 'm' && ch1 == 'g') //go to goal
-  {
-    // count1 = 0;
-    // count2 = 0;
-    // supervisor.reset(0, 0);
-    // supervisor.resetRobot();
-    // float x = atof(buffer + 2);
-    // float y = 0;
-    // char *buf = strchr(buffer, ',');
-    // if (buf != NULL)
-    //   y = atof(buf + 1);
-    // setGoal(x, y, 0);
-    // startGoToGoal();
-    manuaGoal();
   }
 
   else if (ch0 == 'g' && ch1 == 'o') //start go to goal
@@ -408,11 +339,6 @@ void processCommand(char *buffer, int bufferLen)
     setPID(buffer + 2);
   }
 
-  else if (ch0 == 't' && ch1 == 'l') //turn around left/ right(-pwm) test
-  {
-    int pwm = atoi(buffer + 2);
-    turnAround(pwm);
-  }
   else if (ch0 == 'i' && ch1 == 'o') //ignore atObstacle
   {
     int val = atoi(buffer + 2);
