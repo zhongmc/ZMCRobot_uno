@@ -8,9 +8,9 @@ int doubleToStr(double val, int scale, char *buf, char append);
 IMU::IMU()
 {
 
-  KG_ANG = 0.02; //0.2
-  KG = 0.05;
-  m_x_angle = 0;
+  // KG_ANG = 0.02; //0.2
+  // KG = 0.05;
+  // m_x_angle = 0;
 }
 
 void IMU::init()
@@ -20,15 +20,15 @@ void IMU::init()
 
 }
 
-void IMU::getIMUInfo(double *buf, double dt)
-{
-  readIMU(dt);
-  buf[0] = m_sensor_angle; // m_sensor_angle;
-  buf[1] = m_kalman_angle; //m_estima_angle;
-  buf[2] = m_gyro;         //g_fGravityAngle;
-  buf[3] = 0;              //mBalancePWM;
-  buf[4] = m_x_angle;
-}
+// void IMU::getIMUInfo(double *buf, double dt)
+// {
+//   readIMU(dt);
+//   buf[0] = m_sensor_angle; // m_sensor_angle;
+//   buf[1] = m_kalman_angle; //m_estima_angle;
+//   buf[2] = m_gyro;         //g_fGravityAngle;
+//   buf[3] = 0;              //mBalancePWM;
+//   buf[4] = m_x_angle;
+// }
 
 int doubleToStr(double val, int scale, char *buf, char append)
 {
@@ -44,39 +44,39 @@ int doubleToStr(double val, int scale, char *buf, char append)
     return len;
 }
 
-void IMU::sendIMUInfo()
-{
-  char buf[200];
-  int len = 0, off = 0;
-  buf[0] = 'M';
-  buf[1] = 'U';
-  off = 2;
+// void IMU::sendIMUInfo()
+// {
+//   char buf[200];
+//   int len = 0, off = 0;
+//   buf[0] = 'M';
+//   buf[1] = 'U';
+//   off = 2;
 
-  len = doubleToStr(m_sensor_angle, 100, buf + off, ',');
-  off = off + len;
-  len = doubleToStr(m_gyro, 100, buf + off, ',');
-  off = off + len;
-  len = doubleToStr(m_kalman_angle, 100, buf + off, ',');
-  off = off + len;
-  len = doubleToStr(m_km_angle, 100, buf + off, 0);
-  off = off + len;
-  // len = doubleToStr(mSpeedPWM, 100, buf + off, ',');
-  // off = off + len;
-  // len = doubleToStr(robot.velocity * 100, 100, buf + off, ',');
-  // off = off + len;
-  // len = doubleToStr(pwm_l, 100, buf + off, 0);
-  // off = off + len;
-  Serial.write(buf);
-  Serial.write('\r');
-  Serial.write('\n');
-}
+//   len = doubleToStr(m_sensor_angle, 100, buf + off, ',');
+//   off = off + len;
+//   len = doubleToStr(m_gyro, 100, buf + off, ',');
+//   off = off + len;
+//   len = doubleToStr(m_kalman_angle, 100, buf + off, ',');
+//   off = off + len;
+//   len = doubleToStr(m_km_angle, 100, buf + off, 0);
+//   off = off + len;
+//   // len = doubleToStr(mSpeedPWM, 100, buf + off, ',');
+//   // off = off + len;
+//   // len = doubleToStr(robot.velocity * 100, 100, buf + off, ',');
+//   // off = off + len;
+//   // len = doubleToStr(pwm_l, 100, buf + off, 0);
+//   // off = off + len;
+//   Serial.write(buf);
+//   Serial.write('\r');
+//   Serial.write('\n');
+// }
 
-void IMU::resetKalman()
-{
-  readIMU(0);
-  double Angle_accY = atan2((double)ay, (double)az) * RAD_TO_DEG;
-  kalman.setAngle(Angle_accY);
-}
+// void IMU::resetKalman()
+// {
+//   readIMU(0);
+//   double Angle_accY = atan2((double)ay, (double)az) * RAD_TO_DEG;
+//   kalman.setAngle(Angle_accY);
+// }
 
 void IMU::readIMU(double dt)
 {
@@ -135,23 +135,23 @@ void IMU::calculateAttitute(double dt)
 }
 
 //call readIMU() first
-void IMU::calculateAngle(double dt)
-{
+// void IMU::calculateAngle(double dt)
+// {
 
-  m_gyro = gx; //
-  // double Angle_accY = atan(ay / sqrt(ax * ax + az * az)) * 180 / 3.14; //offset
-  // double m_sensor_angle = atan2((double)ay, (double)az) * RAD_TO_DEG;
-  double Angle_accY = atan2((double)ay, (double)az) * RAD_TO_DEG;
-  m_sensor_angle = Angle_accY;                          //filter.getRoll();
-  m_kalman_angle = kalman.getAngle(Angle_accY, gx, dt); // Calculate the angle using a Kalman filter
+//   m_gyro = gx; //
+//   // double Angle_accY = atan(ay / sqrt(ax * ax + az * az)) * 180 / 3.14; //offset
+//   // double m_sensor_angle = atan2((double)ay, (double)az) * RAD_TO_DEG;
+//   double Angle_accY = atan2((double)ay, (double)az) * RAD_TO_DEG;
+//   m_sensor_angle = Angle_accY;                          //filter.getRoll();
+//   m_kalman_angle = kalman.getAngle(Angle_accY, gx, dt); // Calculate the angle using a Kalman filter
 
-  // double Angle_accY = atan2((double)ay, (double)az) * RAD_TO_DEG;
-  // m_km_angle = km.getAngle(Angle_accY, gx, dt);
+//   // double Angle_accY = atan2((double)ay, (double)az) * RAD_TO_DEG;
+//   // m_km_angle = km.getAngle(Angle_accY, gx, dt);
 
-  double angle_accX = atan2((double)ax, (double)az) * RAD_TO_DEG;
-  m_x_angle = estima_cal(m_x_angle, angle_accX, gy, dt, 0.02);
-  m_km_angle = estima_cal(m_km_angle, m_sensor_angle, gx, dt, KG_ANG);
-}
+//   double angle_accX = atan2((double)ax, (double)az) * RAD_TO_DEG;
+//   m_x_angle = estima_cal(m_x_angle, angle_accX, gy, dt, 0.02);
+//   m_km_angle = estima_cal(m_km_angle, m_sensor_angle, gx, dt, KG_ANG);
+// }
 
 double IMU::convertRawAcceleration(int aRaw)
 {
@@ -177,8 +177,8 @@ double IMU::convertRawGyro(int gRaw)
 //angle = (0.98)*(angle + gyro * dt) + (0.02)*(x_acc);
 //一阶融合滤波, angle 当前角度，g_angle重力加速度计角度，gyro 陀螺仪角速度
 // angle = KG * g_angle + (1-KG)*(angle + gyro * dt)
-double IMU::estima_cal(double angle, double g_angle, double gyro, double dt, double KG)
-{
-  double result = KG * g_angle + (1 - KG) * (angle + gyro * dt);
-  return result;
-}
+// double IMU::estima_cal(double angle, double g_angle, double gyro, double dt, double KG)
+// {
+//   double result = KG * g_angle + (1 - KG) * (angle + gyro * dt);
+//   return result;
+// }

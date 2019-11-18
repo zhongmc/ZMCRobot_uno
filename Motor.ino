@@ -154,7 +154,7 @@ long readRightEncoder()
   return count2;
 }
 
-long getWheelsPosition()
-{
-  return count1 + count2;
-}
+// long getWheelsPosition()
+// {
+//   return count1 + count2;
+// }

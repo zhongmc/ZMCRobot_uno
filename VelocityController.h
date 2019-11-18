@@ -20,14 +20,21 @@ public:
 
   void PrintInfo()
   {
-    log("Ctrl Info:%s,%s,%s;%s,%s\nQ:%s,%s\n",
-        floatToStr(0, Kp),
-        floatToStr(1, Ki),
-        floatToStr(2, Kd),
-        floatToStr(3, lastError),
-        floatToStr(4, lastErrorIntegration),
-        floatToStr(5, mTheta),
-        floatToStr(6, mW));
+    Serial.print("Ctrl:");
+    Serial.print(Kp);
+    Serial.write(',');    
+    Serial.print(Ki);
+    Serial.write(',');    
+    Serial.println(Kd);
+
+    // log("Ctrl Info:%s,%s,%s;%s,%s\nQ:%s,%s\n",
+    //     floatToStr(0, Kp),
+    //     floatToStr(1, Ki),
+    //     floatToStr(2, Kd),
+    //     floatToStr(3, lastError),
+    //     floatToStr(4, lastErrorIntegration),
+    //     floatToStr(5, mTheta),
+    //     floatToStr(6, mW));
   }
 
 private:

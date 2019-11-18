@@ -9,7 +9,7 @@ typedef struct
   double v, theta; //velocity and target direction
   double x_g, y_g; //target x,y
   double targetAngle;
-  double turning;
+  // double turning;
 } Input;
 
 typedef struct
@@ -33,16 +33,17 @@ typedef struct
 {
   int sType; // 1: pid for 3 wheel; 2: pid for balance;  3: pid for speed; 4：PID for balance theta； 5: settings for robot; 6: settings for balance robot;
   double kp, ki, kd;
-  double atObstacle, unsafe;
-  double dfw;
   double velocity;
-  int max_rpm, min_rpm;
   //轮子半径，轮距
   double radius, length;
+  int max_pwm, min_pwm;
+  double  unsafe;
 
-  int pwm_diff;
-  int max_pwm, pwm_zero;
-  // double angleOff, wheelSyncKp;
+  // double atObstacle, unsafe;
+  // double dfw;
+  // int max_rpm, min_rpm;
+  // int max_pwm, pwm_zero;
+  // int pwm_diff;
 } SETTINGS;
 
 class Robot
@@ -109,16 +110,16 @@ public:
   double wheel_radius;
   double wheel_base_length;
 
-  double max_rpm;
-  double min_rpm;
+  // double max_rpm;
+  // double min_rpm;
 
   int pwm_diff;
 
   // double angleOff;
 
-  double max_vel, min_vel;
-  double max_v, min_v;
-  double max_w, min_w;
+  // double max_vel, min_vel;
+  // double max_v, min_v;
+  // double max_w, min_w;
 
   double vel_l, vel_r;
 

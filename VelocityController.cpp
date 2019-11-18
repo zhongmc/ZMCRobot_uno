@@ -39,7 +39,7 @@ void VelocityController::setGoal(double v, double w)
   {
     keepTheta = true;
     keepThetaTimer = (1 + 2 * abs(m_robot_w)) * 30;
-    log("kT %d,%s\n", keepThetaTimer, floatToStr(0, m_robot_w));
+    // log("kT %d,%s\n", keepThetaTimer, floatToStr(0, m_robot_w));
     thetaPrevMillis = millis();
     //    mTheta = robot.theta; //转弯结束，保留当前角度
   }
@@ -85,15 +85,15 @@ void VelocityController::setGoal(double v, double w)
       m_w = -sw;
 
 
-    log("SG %s,%s: %s,%s\n", 
-      floatToStr(0, v),
-      floatToStr(1, w),
-      floatToStr(2, m_v),
-      floatToStr(3, m_w)
-      );
+    // log("SG %s,%s: %s,%s\n", 
+    //   floatToStr(0, v),
+    //   floatToStr(1, w),
+    //   floatToStr(2, m_v),
+    //   floatToStr(3, m_w)
+    //   );
 
   }
-  log("SG %s\n", floatToStr(0, v));
+  // log("SG %s\n", floatToStr(0, v));
 }
 
 //depricated
@@ -205,13 +205,6 @@ void VelocityController::execute(Robot *robot, Input *input, Output *output, dou
   // Serial.print(e);
   // Serial.print(",");
   // Serial.println(w);
-
-#ifdef _DEBUG_
-  Serial.print(e);
-  Serial.print(",");
-  Serial.print(w);
-  Serial.print(",");
-#endif
 
   output->v = input->v;
   output->w = w;

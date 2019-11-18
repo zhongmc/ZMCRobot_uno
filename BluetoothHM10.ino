@@ -46,36 +46,58 @@ bool bleConnected = false;
 // remote clients will be able to get notifications if this characteristic changes
 // the characteristic is 2 bytes long as the first field needs to be "Flags" as per BLE specifications
 
+void enumBlooth()
+{
+      while (bluetooth.available()) {
+        char chr = bluetooth.read();
+        Serial.write(chr);
+      }
+
+}
+
 void initBluetooth()
 {
 
   Serial.println("init BLE HM10 ...");
-  bluetooth.begin(12800);
+  bluetooth.begin(19200);
   bleConnected = false;
   /* Now activate the BLE device. It will start continuously transmitting BLE
     advertising packets and will be visible to remote BLE central devices
     until it receives a new connection */
 
-    connectToHM10();
+    bool ret = connectToHM10();
     
   // assign event handlers for connected, disconnected to peripheral
-  Serial.println("BLE rd.");
+  if( ret == true )
+  {
+    bluetooth.write("AT+NAMEZMCRobot-UNO");
+    delay(100);
+    enumBlooth();
+    Serial.write('\n');
+
+    bluetooth.write("AT+NOTI1");
+    delay(200);
+    enumBlooth();
+
+    Serial.println("\nBLE ready...");
+  }
   bleBufLen = 0;
 }
 
 void doBleHM10Loop()
 {
   bool newChars = false;
+  char chr;
   while (bluetooth.available()) {
-    byte chr = bluetooth.read();
+    chr = bluetooth.read();
     bleBuffer[bleBufLen++] = chr; //bluetooth.read();
-    Serial.print(chr);
-    Serial.print(':');
+    // Serial.write(chr);
+    // Serial.print(':');
 //    Serial.print((char)chr);
 //    Serial.print("; ");
     if ( bleBufLen >= 40 )
     {
-      Serial.println("BLE buffer out!");
+      Serial.println("BLE over flow!");
       bleBufLen = 0;
     }
     newChars = true;
@@ -96,7 +118,7 @@ void doBleHM10Loop()
   {
      bleConnected = false;
      bleBufLen = 0;
-     Serial.println("BLE disconnected!");
+     Serial.println("BLE disc!");
      return;
   }
   
@@ -108,12 +130,12 @@ void doBleHM10Loop()
       bleConnected = true;
       memmove(bleBuffer, bleBuffer + 7, bleBufLen - 7 );
       bleBufLen = bleBufLen - 7;
-      Serial.println("BLE Connected!");
+      Serial.println("BLE Con!");
     }
     if( bleBufLen > 2 && bleBuffer[0] == bleBufLen-2 ) //get a full package!
     {
       bleConnected = true;
-      Serial.println("BLE still Connected!");
+      Serial.println("BLE...");
     }
   }
 
@@ -313,15 +335,15 @@ void setConfigValue(const unsigned char *cfgArray)
   SETTINGS settings;
   settings.sType = settingsType;
 
-  if (settingsType == 1 || settingsType == 2 || settingsType == 3 || settingsType == 4)
+  if (settingsType == 1)  //  || settingsType == 2 || settingsType == 3 || settingsType == 4)
   {
     settings.kp = byteToFloat((byte *)(cfgArray + 1), 100);
     settings.ki = byteToFloat((byte *)(cfgArray + 3), 1000);
     settings.kd = byteToFloat((byte *)(cfgArray + 5), 1000);
 
-    log("KP:%s, KI:%s, KD:%s\n",
-        floatToStr(0, settings.kp),
-        floatToStr(1, settings.ki), floatToStr(2, settings.kd));
+    // log("KP:%s, KI:%s, KD:%s\n",
+    //     floatToStr(0, settings.kp),
+    //     floatToStr(1, settings.ki), floatToStr(2, settings.kd));
     // Serial.print("KP:");
     // Serial.print(settings.kp);
     // Serial.print(" KI:");
@@ -333,13 +355,13 @@ void setConfigValue(const unsigned char *cfgArray)
   else if (settingsType == 5)
   {
 
-    settings.atObstacle = byteToFloat((byte *)(cfgArray + 1), 100);
+    // settings.atObstacle = byteToFloat((byte *)(cfgArray + 1), 100);
     settings.unsafe = byteToFloat((byte *)(cfgArray + 3), 100);
-    settings.dfw = byteToFloat((byte *)(cfgArray + 5), 100);
+    // settings.dfw = byteToFloat((byte *)(cfgArray + 5), 100);
     settings.velocity = byteToFloat((byte *)(cfgArray + 7), 100);
 
-    settings.max_rpm = byteToInt((byte *)(cfgArray + 9));
-    settings.min_rpm = byteToInt((byte *)(cfgArray + 11));
+    // settings.max_rpm = byteToInt((byte *)(cfgArray + 9));
+    // settings.min_rpm = byteToInt((byte *)(cfgArray + 11));
 
     settings.radius = byteToFloat((byte *)(cfgArray + 13), 1000);
     settings.length = byteToFloat((byte *)(cfgArray + 15), 1000);
@@ -348,22 +370,25 @@ void setConfigValue(const unsigned char *cfgArray)
     // settings.pwm_zero = (int)cfgArray[14];
     // settings.angleOff = byteToFloat((byte *)(cfgArray + 15), 100);
 
-    log("atObs:%s, unsafe:%s, dfw:%s, v:%s, max_rmp:%d, min_rpm:%d, R:%s, L:%s\n",
-        floatToStr(0, settings.atObstacle),
-        floatToStr(1, settings.unsafe),
-        floatToStr(2, settings.dfw),
-        floatToStr(3, settings.velocity),
-        settings.max_rpm,
-        settings.min_rpm,
-        floatToStr(4, settings.radius),
-        floatToStr(5, settings.length)
+    // log("atObs:%s, unsafe:%s, dfw:%s, v:%s, max_rmp:%d, min_rpm:%d, R:%s, L:%s\n",
+    //     floatToStr(0, settings.atObstacle),
+    //     floatToStr(1, settings.unsafe),
+    //     floatToStr(2, settings.dfw),
+    //     floatToStr(3, settings.velocity),
+    //     settings.max_rpm,
+    //     settings.min_rpm,
+    //     floatToStr(4, settings.radius),
+    //     floatToStr(5, settings.length)
 
-    );
+    // );
   }
-  if (settingsType == 1 || settingsType == 5 || settingsType == 2 || settingsType == 3 || settingsType == 4)
-  {
-    driveSupervisor.updateSettings(settings);
-  }
+
+  driveSupervisor.updateSettings(settings);
+
+  // if (settingsType == 1 || settingsType == 5 || settingsType == 2 || settingsType == 3 || settingsType == 4)
+  // {
+  //   driveSupervisor.updateSettings(settings);
+  // }
   // setSettings(settings);
   //  updateConfigToMenu();
 }
@@ -428,10 +453,12 @@ void sendSettingsData( int settingsType )
   byte settingsArray[18];
   byte len;
 
+  memset( settingsArray, 0, 18);
+
   settingsArray[0] = (byte)settingsType;
   len = 7;
 
-  if (settingsType == 1 || settingsType == 2 || settingsType == 3 || settingsType == 4)
+  if (settingsType == 1) // || settingsType == 2 || settingsType == 3 || settingsType == 4)
   {
 
     floatToByte(settingsArray + 1, settings.kp, 100);
@@ -441,13 +468,13 @@ void sendSettingsData( int settingsType )
 
   else if (settingsType == 5)
   {
-    floatToByte(settingsArray + 1, settings.atObstacle, 100);
+    // floatToByte(settingsArray + 1, settings.atObstacle, 100);
     floatToByte(settingsArray + 3, settings.unsafe, 100);
-    floatToByte(settingsArray + 5, settings.dfw, 100);
+    // floatToByte(settingsArray + 5, settings.dfw, 100);
     floatToByte(settingsArray + 7, settings.velocity, 100);
 
-    intToByte(settingsArray + 9, settings.max_rpm);
-    intToByte(settingsArray + 11, settings.min_rpm);
+    // intToByte(settingsArray + 9, settings.max_rpm);
+    // intToByte(settingsArray + 11, settings.min_rpm);
 
     floatToByte(settingsArray + 13, settings.radius, 1000);
 
@@ -526,9 +553,10 @@ int byteToInt(byte *arrayBuf )
 bool connectToHM10(){
   bool found = false;
  
-   int baudrate[8] ={4800,9600,14400,19200,28800,38400,57600,115200};
+    // 0 9600 1 19200 2 38400 3 57600 4 115200  5 4800 6 2400 7 1200 8 230400
+   int baudrate[6] ={4800,9600,19200,38400,57600,115200};
 
-  for(int j=0; j<8; j++)
+  for(int j=0; j<6; j++)
    {
       bluetooth.begin(baudrate[j]);
       delay(100);
@@ -544,7 +572,7 @@ bool connectToHM10(){
        if( found == true )
        {
         Serial.println("OK!");
-        return found;
+        return true;
        }
        delay(100);
    }

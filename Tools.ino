@@ -125,16 +125,16 @@ void getDoubleValues(char *buffer, int c, double *fvs)
   // Serial.println(';');
 }
 
-int formatStr(char *buf, const char *format, ...)
-{
-  int c = 0;
-  va_list vArgList;
-  va_start(vArgList, format);
-  c = vsprintf(buf, format, vArgList); //_vsnprintf(buf, 256, format, vArgList);
-  va_end(vArgList);
-  // *(buf + c) = 0;
-  return c;
-}
+// int formatStr(char *buf, const char *format, ...)
+// {
+//   int c = 0;
+//   va_list vArgList;
+//   va_start(vArgList, format);
+//   c = vsprintf(buf, format, vArgList); //_vsnprintf(buf, 256, format, vArgList);
+//   va_end(vArgList);
+//   // *(buf + c) = 0;
+//   return c;
+// }
 
 void log(const char *format, ...)
 {
@@ -146,7 +146,7 @@ void log(const char *format, ...)
   Serial.print(tmp);
 }
 
-char tmp[20][15];
+char tmp[10][15];
 
 const char *floatToStr(int idx, double val)
 {
@@ -156,7 +156,7 @@ const char *floatToStr(int idx, double val)
 
 const char *floatToStr(int idx, signed char width, unsigned char prec, double val)
 {
-  if (idx >= 19)
+  if (idx > 9)
     return NULL;
   dtostrf(val, width, prec, tmp[idx]);
   return tmp[idx];
@@ -314,12 +314,12 @@ void processCommand(char *buffer, int bufferLen)
     setGoal(fvs[0], fvs[1], fvs[2], fvs[3]);
   }
 
-  else if (ch0 == 'o' && ch1 == 'd') //set obstacle distance
-  {
-    double ods[5];
-    getDoubleValues(buffer + 2, 5, ods);
-    // supervisor.setObstacleDistance(ods);
-  }
+  // else if (ch0 == 'o' && ch1 == 'd') //set obstacle distance
+  // {
+  //   double ods[5];
+  //   getDoubleValues(buffer + 2, 5, ods);
+  //   // supervisor.setObstacleDistance(ods);
+  // }
   else if (ch0 == 'r' && ch1 == 'p') //set robot position
   {
     double fvs[3];

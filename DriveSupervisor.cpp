@@ -119,65 +119,13 @@ void DriveSupervisor::execute(long left_ticks, long right_ticks, double gyro, do
     return;
   }
 
-#ifdef _DEBUG_
-  Serial.print(robot.x);
-  Serial.print(",");
-  Serial.print(robot.y);
-  Serial.print(",");
-  Serial.print(robot.theta);
-  Serial.print(",");
-#endif
-
   m_Controller.execute(&robot, &m_input, &m_output, dt);
 
-  // double obsDis = robot.getObstacleDistance();
-
-  // float v = m_output.v;
-  // if (abs(m_output.w) < 5)
-  //   v = v / (1 + W_SPEED_DOWN_SCALE * abs(m_output.w) / 5); //slow down according to turning w
-  // else
-  //   v = v / (1 + W_SPEED_DOWN_SCALE * abs(m_output.w)); //slow down according to turning w
-
-  // if (obsDis < 0.10) //danger only allow turning
-  // {
-  //   v = 0;
-  // }
-  // else if (obsDis < MAX_IRSENSOR_DIS)
-  // {
-  //   float v1 = m_output.v * log10(DIS_SPEED_DOWN_SCALE * obsDis + 1); //obsDis*10  slow down according to obstacle
-  //   v = min(v, v1);
-  // }
-
-  // float w = m_output.w; // max(min(m_output.w, robot.max_w), -robot.max_w);
-
-  // Vel vel;
 
   v = m_output.v;
   w = m_output.w;
 
-  //mVel = robot.ensure_w(v, w);
-
   PWM_OUT pwm = robot.getPWMOut(v, w);
-
-  // pwm.pwm_l = (int)robot.vel_l_to_pwm(mVel.vel_l);
-  // pwm.pwm_r = (int)robot.vel_r_to_pwm(mVel.vel_r);
-
-#ifdef _DEBUG_
-  Serial.print(v);
-  Serial.print(",");
-  Serial.print(w);
-
-  Serial.print(",");
-  Serial.print(vel.vel_l);
-  Serial.print(",");
-  Serial.print(vel.vel_r);
-
-  Serial.print(",");
-  Serial.print(pwm.pwm_l);
-  Serial.print(",");
-  Serial.println(pwm.pwm_r);
-
-#endif
 
   if (mSimulateMode)
   {
@@ -206,11 +154,6 @@ void DriveSupervisor::execute(long left_ticks, long right_ticks, double gyro, do
       (int)(100 * irSensors[2]->distance),
       (int)(100 * irSensors[3]->distance),
       (int)(100 * irSensors[4]->distance));
-
-  //   uint32_t nowMicros = micros();
-
-  //     Serial.print(",");
-  //   Serial.println( nowMicros - timer);
 }
 
 // extern double ultrasonicDistance;
@@ -219,24 +162,6 @@ void DriveSupervisor::check_states()
 {
 
   IRSensor **irSensors = robot.getIRSensors();
-  //    for( int i=0; i<5; i++)
-  //    {
-  //      if( irSensors[i]->distance < d_at_obs )
-  //        at_obstacle = true;
-  //      if( irSensors[i]->distance < d_unsafe )
-  //        unsafe = true;
-  //    }
-
-  //if ( irSensors[1]->distance < d_unsafe || irSensors[2]->distance < d_unsafe || irSensors[3]->distance < d_unsafe )
-
-  // if (ultrasonicDistance < MAX_ULTRASONIC_DIS)
-  // {
-  //   if (ultrasonicDistance < 0.05)
-  //     danger = true;
-  //   else
-  //     danger = false;
-  //   return;
-  // }
 
   if (irSensors[2]->distance < d_unsafe)
     danger = true;

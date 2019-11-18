@@ -31,16 +31,16 @@ void Robot::init(double R, double L, double ticksr_l, double ticksr_r, double mi
   m_per_tick_l = 2 * PI * wheel_radius / ticks_per_rev_l;
   m_per_tick_r = 2 * PI * wheel_radius / ticks_per_rev_r;
 
-  max_rpm = maxRpm; //160; //267
-  max_vel = max_rpm * 2 * PI / 60;
+  // max_rpm = maxRpm; //160; //267
+  // max_vel = max_rpm * 2 * PI / 60;
 
-  min_rpm = minRpm; // 70; //113
-  min_vel = min_rpm * 2 * PI / 60;
+  // min_rpm = minRpm; // 70; //113
+  // min_vel = min_rpm * 2 * PI / 60;
 
-  max_v = max_vel * wheel_radius;
-  min_v = min_vel * wheel_radius;
-  max_w = (wheel_radius / wheel_base_length) * (max_vel); // - min_vel);
-  min_w = (wheel_radius / wheel_base_length) * (min_vel);
+  // max_v = max_vel * wheel_radius;
+  // min_v = min_vel * wheel_radius;
+  // max_w = (wheel_radius / wheel_base_length) * (max_vel); // - min_vel);
+  // min_w = (wheel_radius / wheel_base_length) * (min_vel);
 
   pwm_diff = 0;
   // angleOff = 0;
@@ -77,21 +77,21 @@ void Robot::updateSettings(SETTINGS settings)
   wheel_radius = settings.radius;
   wheel_base_length = settings.length;
 
-  max_rpm = settings.max_rpm; //267
-  max_vel = max_rpm * 2 * PI / 60;
+  // max_rpm = settings.max_rpm; //267
+  // max_vel = max_rpm * 2 * PI / 60;
 
-  min_rpm = settings.min_rpm; //113
-  min_vel = min_rpm * 2 * PI / 60;
+  // min_rpm = settings.min_rpm; //113
+  // min_vel = min_rpm * 2 * PI / 60;
 
-  max_v = max_vel * wheel_radius;
-  min_v = min_vel * wheel_radius;
+  // max_v = max_vel * wheel_radius;
+  // min_v = min_vel * wheel_radius;
 
-  max_w = (wheel_radius / wheel_base_length) * (max_vel); // - min_vel);
-  min_w = (wheel_radius / wheel_base_length) * (min_vel);
+  // max_w = (wheel_radius / wheel_base_length) * (max_vel); // - min_vel);
+  // min_w = (wheel_radius / wheel_base_length) * (min_vel);
 
   // max_w = (wheel_radius / wheel_base_length) * (max_vel - min_vel);
   // min_w = (wheel_radius / wheel_base_length) * (2 * min_vel);
-  pwm_diff = settings.pwm_diff;
+  // pwm_diff = settings.pwm_diff;
   // angleOff = settings.angleOff;
 }
 
@@ -234,7 +234,8 @@ void Robot::setObstacleDistance(double dis[5])
 
 void Robot::getRobotInfo()
 {
-
+  Serial.println("RB...");
+/*
   log("x:%s,y:%s,Q:%s,v:%s\n",
       floatToStr(0, x),
       floatToStr(1, y),
@@ -274,6 +275,7 @@ void Robot::getRobotInfo()
     Serial.print(",");
   }
   Serial.println(";");
+  */
 }
 
 IRSensor **Robot::getIRSensors()

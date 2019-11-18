@@ -133,21 +133,22 @@ void setup()
   // ultr sound echo intterupt
   // attachInterrupt(digitalPinToInterrupt(ULTRASONIC_ECHO), UltrasonicEcho, CHANGE);
 
-  SETTINGS mSettings;
-  mSettings.sType = 0;
+  // SETTINGS mSettings;
+  // mSettings.sType = 0;
 
-  mSettings.sType = 0;
-  mSettings.kp = 5;
-  mSettings.ki = 0.01;
-  mSettings.kd = 0.05;
+  // mSettings.sType = 0;
+  // mSettings.kp = 5;
+  // mSettings.ki = 0.01;
+  // mSettings.kd = 0.05;
 
-  mSettings.max_rpm = 200;
-  mSettings.min_rpm = 40; //45
+  // mSettings.max_rpm = 200;
+  // mSettings.min_rpm = 40; //45
 
-  mSettings.atObstacle = 0.25; //0.15
-  mSettings.unsafe = 0.1;
-  mSettings.dfw = 0.2;      //0.25
-  mSettings.velocity = 0.2; //0.3
+  // mSettings.atObstacle = 0.25; //0.15
+  // mSettings.unsafe = 0.1;
+  // mSettings.dfw = 0.2;      //0.25
+  // mSettings.velocity = 0.2; //0.3
+
   driveSupervisor.init();
   bExecDrive = false;
   bExecGTG = false;
@@ -170,8 +171,6 @@ int driveCycleCount = 0;
 void loop()
 {
 
-  checkSerialData();
-  blinkLed.beSureToBlink();
   //ble cmd process
   // processSetingsRequire();
   //ultrasonic process
@@ -188,6 +187,11 @@ void loop()
     bExecDrive = false;
     driveSupervisor.execute(readLeftEncoder(), readRightEncoder(), mIMU.getGyro(2), 0.05); //1/20
   }
+
+  checkSerialData();
+  doBleHM10Loop();
+
+  blinkLed.beSureToBlink();
 
   // if (bExecGTG)
   // {
@@ -280,12 +284,6 @@ void startDrive()
   // const int oneSecInUsec = 1000000; // A second in mirco second unit.
   // // time = oneSecInUsec / 100; // time is used to toggle the LED is divided by i
   // CurieTimerOne.start(oneSecInUsec / 20, &driveIsr); // set timer and callback
-}
-
-void driveIsr()
-{
-  bExecDrive = true;
-  // driveSupervisor.execute(readLeftEncoder(), readRightEncoder(), 0.05); //1/20
 }
 
 

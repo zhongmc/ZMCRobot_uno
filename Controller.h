@@ -16,12 +16,12 @@ public:
   void PrintInfo()
   {
 
-    log(" [p,i,d e,ei]:%s,%s,%s,%s,%s\n",
-        floatToStr(0, Kp),
-        floatToStr(1, Ki),
-        floatToStr(2, Kd),
-        floatToStr(3, lastError),
-        floatToStr(4, lastErrorIntegration));
+    // log(" [p,i,d e,ei]:%s,%s,%s,%s,%s\n",
+    //     floatToStr(0, Kp),
+    //     floatToStr(1, Ki),
+    //     floatToStr(2, Kd),
+    //     floatToStr(3, lastError),
+    //     floatToStr(4, lastErrorIntegration));
   }
 
   void getSettings(SETTINGS *pSettings)
